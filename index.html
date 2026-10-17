@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soham Naik | Full Stack .NET & React Engineer — GitHub Universe Inspired</title>
+  <meta name="description" content="Portfolio of Soham Naik, Full Stack .NET Developer. Inspired by GitHub Universe design with interactive code-grid cursor trail, multi-tech Dev Quest game, and live REST API sandbox.">
+  
+  <!-- Canonical & Social Graph for sohamnaik.me -->
+  <link rel="canonical" href="https://sohamnaik.me/">
+  <meta property="og:title" content="Soham Naik | Full Stack .NET Engineer">
+  <meta property="og:description" content="Portfolio of Soham Naik, Full Stack .NET Developer. Inspired by GitHub Universe design with interactive C# terminal, multi-tech Dev Quest, and live REST API sandbox.">
+  <meta property="og:url" content="https://sohamnaik.me/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Security Directives -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';">
+
+  <!-- Modern Clean Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['"Fira Code"', 'SFMono-Regular', 'Menlo', 'monospace'],
+          },
+          colors: {
+            universe: {
+              bg: '#eceef1',
+              darkBg: '#090d16',
+              border: '#d0d7de',
+              darkBorder: '#30363d',
+              green: '#00e575',
+              blue: '#0969da',
+              pink: '#ff2d78',
+              purple: '#8a2be2',
+              gold: '#cca000',
+              orange: '#e65100',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Pinned Production Dependencies (Lucide Icons & Confetti) -->
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* GitHub Universe Architectural Hairline Grid */
+    :root {
+      --grid-cell: 20px;
+      --grid-line-light: rgba(140, 149, 159, 0.16);
+      --grid-line-dark: rgba(255, 255, 255, 0.05);
+    }
+
+    body {
+      background-color: #ffffff;
+      transition: background-color 0.25s ease;
+    }
+    body.theme-grid {
+      background-color: #ebedf0;
+    }
+    .dark body {
+      background-color: #0b0f19;
+    }
+    .dark body.theme-grid {
+      background-color: #0b0f19;
+    }
+
+    #site-header {
+      background-color: rgba(255, 255, 255, 0.92);
+      transition: background-color 0.25s ease;
+    }
+    body.theme-grid #site-header {
+      background-color: rgba(235, 237, 240, 0.92);
+    }
+    .dark #site-header {
+      background-color: rgba(11, 15, 25, 0.92);
+    }
+    .dark body.theme-grid #site-header {
+      background-color: rgba(11, 15, 25, 0.92);
+    }
+
+    /* Fixed Canvas for GitHub Universe Style Tile Trail (in background) */
+    #cursor-trail-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0; /* Strictly behind all content and text */
+    }
+
+    /* Architectural Hairline Grid Background (Hidden by default for Plain White BG) */
+    .universe-grid {
+      background-size: var(--grid-cell) var(--grid-cell);
+      background-image: 
+        linear-gradient(to right, var(--grid-line-light) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line-light) 1px, transparent 1px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    body.theme-grid .universe-grid {
+      opacity: 1;
+    }
+    .dark .universe-grid {
+      background-image: 
+        linear-gradient(to right, var(--grid-line-dark) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line-dark) 1px, transparent 1px);
+    }
+
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #bcc3ce; border-radius: 4px; }
+    .dark ::-webkit-scrollbar-thumb { background: #30363d; }
+  </style>
+</head>
+<body class="text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-150 min-h-screen relative flex flex-col overflow-x-hidden">
+
+  <!-- Interactive Canvas: GitHub Universe Pixel-Aligned Tile Trail -->
+  <canvas id="cursor-trail-canvas"></canvas>
+
+  <!-- Architectural Background Grid -->
+  <div id="grid-layer" class="fixed inset-0 universe-grid pointer-events-none -z-10"></div>
+
+  <!-- ========================================================= -->
+  <!-- 1. TOP TERMINAL TICKER (GitHub Universe Signature Bar)   -->
+  <!-- ========================================================= -->
+  <div class="w-full bg-[#030712] text-[#00e575] font-mono text-[11px] sm:text-xs py-2 px-4 flex items-center justify-between border-b border-slate-800 z-30 select-none tracking-wide">
+    <div class="flex items-center gap-3 truncate">
+      <span class="text-slate-400 font-normal">soham-naik/dev-stream/</span>
+      <span class="font-bold flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-[#00e575] animate-ping"></span>
+        STATUS: OPEN_TO_WORK
+      </span>
+      <span class="hidden md:inline text-slate-500">•</span>
+      <span class="hidden md:inline text-slate-300">PUNE, INDIA (UTC+5:30)</span>
+      <span class="hidden lg:inline text-slate-500">•</span>
+      <span class="hidden lg:inline text-slate-400">ASP.NET CORE &amp; REACT</span>
+    </div>
+
+    <!-- Live Time Counter & Hire Link -->
+    <div class="flex items-center gap-4 text-slate-300 font-mono text-[11px] shrink-0">
+      <span class="hidden sm:inline text-slate-400">UPTIME: <strong id="live-timer" class="text-white">00:00:00</strong></span>
+      <span class="text-slate-700">|</span>
+      <a href="#contact" onclick="goToContact(event)" class="text-[#00e575] hover:underline flex items-center gap-1 cursor-pointer font-bold" title="Jump to contact and hire details">
+        <span>HIRE_SOHAM &rarr;</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- 2. ARCHITECTURAL NAV BAR WITH HIGH-SCORE DISPLAY          -->
+  <!-- ========================================================= -->
+  <header id="site-header" class="w-full bg-white/90 dark:bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-300 dark:border-slate-800 sticky top-0 z-40 transition-colors duration-200">
+    <div class="w-full flex items-stretch justify-between px-2 sm:px-6 lg:px-8">
+      
+      <!-- Brand Box -->
+      <a href="#" class="flex items-center gap-3 px-4 sm:px-6 py-3.5 border-r border-slate-300 dark:border-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-800/40 transition-colors">
+        <div class="font-mono font-black text-lg sm:text-xl tracking-tighter text-slate-900 dark:text-white flex items-center gap-1">
+          <span class="text-purple-600 dark:text-purple-400">&lt;</span>SN<span class="text-purple-600 dark:text-purple-400">/&gt;</span>
+        </div>
+        <div class="hidden sm:block">
+          <div class="font-bold text-xs leading-none text-slate-900 dark:text-white">Soham Naik</div>
+          <div class="text-[10px] font-mono text-slate-500 dark:text-slate-400 leading-tight">Full Stack .NET</div>
+        </div>
+      </a>
+
+      <!-- Navigation Columns with Vertical Hairline Dividers -->
+      <nav class="hidden md:flex items-stretch font-mono text-xs">
+        <a href="#about" class="px-5 flex items-center text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white hover:bg-slate-200/40 dark:hover:bg-slate-800/40 border-r border-slate-300 dark:border-slate-800 transition-colors font-semibold">
+          About
+        </a>
+        <a href="#projects" class="px-5 flex items-center text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white hover:bg-slate-200/40 dark:hover:bg-slate-800/40 border-r border-slate-300 dark:border-slate-800 transition-colors font-semibold">
+          Projects
+        </a>
+        <a href="#api-sandbox" class="px-5 flex items-center text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white hover:bg-slate-200/40 dark:hover:bg-slate-800/40 border-r border-slate-300 dark:border-slate-800 transition-colors font-semibold">
+          API Sandbox
+        </a>
+        <a href="#experience" class="px-5 flex items-center text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white hover:bg-slate-200/40 dark:hover:bg-slate-800/40 border-r border-slate-300 dark:border-slate-800 transition-colors font-semibold">
+          Experience
+        </a>
+        <a href="#skills" class="px-5 flex items-center text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white hover:bg-slate-200/40 dark:hover:bg-slate-800/40 border-r border-slate-300 dark:border-slate-800 transition-colors font-semibold">
+          Skills
+        </a>
+      </nav>
+
+      <!-- Right Action Area: GitHub Universe style Game High-Score Pill -->
+      <div class="flex items-stretch">
+        
+        <!-- Interactive Dev-Quest High Score Button (Matches image 2: 'super-mona / your high score: 1535 ■') -->
+        <button onclick="openGameModal()" class="px-4 py-2 flex items-center gap-2 font-mono text-xs text-slate-900 dark:text-white hover:bg-purple-100/60 dark:hover:bg-purple-950/40 border-l border-slate-300 dark:border-slate-800 transition-all group" title="Click to play Dev Quest minigame">
+          <span class="text-purple-600 dark:text-purple-400 font-bold group-hover:underline">dev-quest</span>
+          <span class="text-slate-400">/</span>
+          <span class="text-slate-600 dark:text-slate-300">high score:</span>
+          <span id="nav-high-score" class="font-bold text-[#00a854] dark:text-[#00e575]">0</span>
+          <span class="inline-block w-2.5 h-2.5 bg-[#00a854] dark:bg-[#00e575] group-hover:scale-125 transition-transform"></span>
+        </button>
+
+        <!-- Sound Toggle -->
+        <button onclick="toggleAudio()" class="px-3.5 flex items-center text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white border-l border-slate-300 dark:border-slate-800 transition-colors" title="Toggle 8-bit sound">
+          <i id="sound-icon" data-lucide="volume-x" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button onclick="toggleTheme()" class="px-3.5 flex items-center text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white border-l border-slate-300 dark:border-slate-800 transition-colors" title="Toggle Light / Dark mode">
+          <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Background Style Toggle (Plain White vs Grid) -->
+        <button id="bg-toggle-btn" onclick="toggleBackground()" class="px-3.5 flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white border-l border-slate-300 dark:border-slate-800 transition-colors group" title="Toggle Plain White BG vs Grid [Shortcut: G]">
+          <i id="bg-toggle-icon" data-lucide="square" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i>
+          <span id="bg-toggle-label" class="hidden xl:inline font-mono text-[11px] font-bold">Plain BG</span>
+        </button>
+
+        <!-- Direct Contact -->
+        <a href="#contact" class="hidden sm:flex items-center gap-2 px-5 font-mono text-xs font-bold text-white bg-slate-950 dark:bg-white dark:text-black hover:bg-purple-700 dark:hover:bg-purple-300 transition-colors">
+          <span>Contact &rarr;</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========================================================= -->
+  <!-- 3. HERO: EDITORIAL GITHUB UNIVERSE STYLE                   -->
+  <!-- ========================================================= -->
+  <main class="flex-1 relative z-10">
+    <section id="about" class="border-b border-slate-300 dark:border-slate-800 w-full">
+      <div class="w-full grid grid-cols-1 lg:grid-cols-12">
+        
+        <!-- Left Hero Column -->
+        <div class="lg:col-span-7 xl:col-span-8 p-6 sm:p-10 lg:p-14 xl:p-16 border-b lg:border-b-0 lg:border-r border-slate-300 dark:border-slate-800 flex flex-col justify-between">
+          
+          <div class="space-y-6">
+            <!-- Pill Tag -->
+            <div class="inline-flex items-center gap-2 px-3 py-1 font-mono text-xs font-bold bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200">
+              <span class="w-2 h-2 bg-[#00a854] dark:bg-[#00e575] inline-block"></span>
+              <span>ASP.NET CORE • REACT • CLEAN ARCHITECTURE • AZURE</span>
+            </div>
+
+            <!-- Main Heading (Clean Grotesque Typography like GitHub Universe) -->
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-950 dark:text-white leading-[1.05]">
+              Where resilient backend systems meet clean interfaces.
+            </h1>
+
+            <!-- Bio text -->
+            <p class="text-base sm:text-lg text-slate-700 dark:text-slate-300 max-w-3xl font-normal leading-relaxed pt-1">
+              I’m <strong class="text-black dark:text-white font-bold">Soham Naik</strong>, a Full Stack .NET Developer specializing in enterprise Web APIs, domain-driven Clean Architecture, distributed Redis caching, and automated testing with xUnit.
+            </p>
+          </div>
+
+          <!-- Bottom Action Buttons & High-Score Prompt -->
+          <div class="pt-8 flex flex-wrap items-center gap-4">
+            <button onclick="openGameModal()" class="px-6 py-3.5 bg-purple-600 hover:bg-purple-700 text-white font-mono text-xs font-bold flex items-center gap-2.5 transition-all shadow-md active:scale-95">
+              <i data-lucide="gamepad-2" class="w-4 h-4 text-[#00e575]"></i>
+              <span>PLAY DEV-QUEST (16+ TECHS)</span>
+            </button>
+
+            <a href="#projects" class="px-5 py-3.5 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-mono text-xs font-bold border border-slate-300 dark:border-slate-700 transition-colors flex items-center gap-2">
+              <i data-lucide="terminal" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i>
+              <span>VIEW PROJECTS</span>
+            </a>
+
+            <a href="mailto:sohamnaik2586@gmail.com" class="px-4 py-3.5 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white font-mono text-xs font-medium flex items-center gap-1.5 transition-colors">
+              <i data-lucide="mail" class="w-4 h-4"></i>
+              <span>sohamnaik2586@gmail.com</span>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Right Hero Column: Interactive C# Terminal Window -->
+        <div class="lg:col-span-5 xl:col-span-4 bg-[#0a0f1d] text-slate-200 p-6 sm:p-8 xl:p-12 flex flex-col justify-between font-mono text-xs border-slate-300 dark:border-slate-800 relative no-trail">
+          
+          <div>
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span>
+                <span class="text-slate-400 text-[11px] ml-1">DeveloperProfile.cs</span>
+              </div>
+              <span class="text-[10px] text-[#00e575] bg-emerald-950/80 px-2 py-0.5 border border-emerald-600/40">
+                .NET CORE CLR
+              </span>
+            </div>
+
+            <!-- Code -->
+            <div class="space-y-1 text-slate-300 leading-relaxed text-[11px] sm:text-xs">
+              <p><span class="text-purple-400">using</span> Architecture.Clean;</p>
+              <p><span class="text-purple-400">using</span> Microsoft.AspNetCore.Mvc;</p>
+              <p class="pt-2"><span class="text-blue-400">namespace</span> <span class="text-amber-300">SohamNaik</span>;</p>
+              <p><span class="text-purple-400">public record</span> <span class="text-amber-300 font-bold">Engineer</span>(</p>
+              <div class="pl-4 text-emerald-300">
+                <p>string Name = <span class="text-pink-400">"Soham Naik"</span>,</p>
+                <p>string Role = <span class="text-pink-400">"Full Stack .NET Dev"</span>,</p>
+                <p>string College = <span class="text-pink-400">"GH Raisoni (CGPA 7.76)"</span>,</p>
+                <p>bool OpenToWork = <span class="text-amber-400 font-bold">true</span></p>
+              </div>
+              <p>);</p>
+            </div>
+
+            <!-- Console Output area -->
+            <div id="code-output" class="mt-5 p-3 bg-black/90 border border-slate-800 text-[11px] text-slate-300 space-y-1 min-h-[92px] font-mono transition-all">
+              <p class="text-slate-500">&gt; dotnet test --filter UnitTests</p>
+              <p class="text-[#00e575]">✓ 52 Passed, 0 Failed (Clean Architecture)</p>
+              <p class="text-purple-300">&gt; Status: Ready to deploy to production.</p>
+            </div>
+          </div>
+
+          <div class="pt-5 border-t border-slate-800 flex items-center justify-between">
+            <span class="text-[11px] text-slate-400 flex items-center gap-1.5">
+              <span id="jit-indicator" class="w-1.5 h-1.5 bg-[#00e575] rounded-full animate-pulse"></span>
+              <span id="jit-label">JIT Optimized</span>
+            </span>
+            <button id="run-suite-btn" onclick="runVirtualTests()" class="px-3.5 py-1.5 bg-[#00e575] hover:bg-[#00c865] active:scale-95 text-black font-mono font-bold text-[11px] flex items-center gap-1.5 transition-all shadow-sm cursor-pointer select-none" title="Run dotnet test suite simulation">
+              <i id="run-suite-icon" data-lucide="play" class="w-3 h-3 fill-current"></i>
+              <span id="run-suite-label">Run Suite</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 4. PROJECTS                                              -->
+    <!-- ========================================================= -->
+    <section id="projects" class="border-b border-slate-300 dark:border-slate-800 w-full">
+      <div class="w-full">
+        
+        <!-- Section Header Strip -->
+        <div class="p-6 sm:p-8 lg:px-12 xl:px-16 bg-white/95 dark:bg-slate-900/95 border-b border-slate-300 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="font-mono text-xs font-bold text-purple-700 dark:text-purple-400 uppercase tracking-widest mb-1">
+              // 02. PROJECTS
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+              Featured .NET Projects
+            </h2>
+          </div>
+          <div class="font-mono text-xs text-slate-600 dark:text-slate-400 max-w-md">
+            Backend services, REST APIs, and full-stack systems built with ASP.NET Core, C#, SQL Server, and React.
+          </div>
+        </div>
+
+        <!-- 3-Column Project Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-slate-300 dark:divide-slate-800 w-full">
+          
+          <!-- PROJECT 1: LEAD MANAGEMENT SYSTEM (CRM) -->
+          <div class="p-6 sm:p-8 xl:p-10 bg-white/95 dark:bg-slate-900/95 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3 font-mono text-xs">
+                <span class="px-2 py-0.5 bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-bold">
+                  ASP.NET Core + React
+                </span>
+                <a href="#api-sandbox" class="text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 font-semibold text-[11px]">
+                  <i data-lucide="play" class="w-3 h-3 fill-current"></i> Test API
+                </a>
+              </div>
+
+              <h3 class="text-xl font-bold text-slate-950 dark:text-white mb-2.5">
+                Lead Management System (CRM)
+              </h3>
+
+              <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
+                Full-stack CRM system built with ASP.NET Core Web API and React. Implements 3-tier Clean Architecture (API &rarr; BLL &rarr; DAL), JWT authentication, role-based access control, and distributed Redis caching.
+              </p>
+
+              <!-- Highlights -->
+              <ul class="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 font-mono mb-5">
+                <li class="flex items-start gap-1.5">
+                  <span class="text-[#00a854] dark:text-[#00e575] font-bold">&bull;</span>
+                  <span>JWT authentication &amp; role-based access</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-amber-600 dark:text-amber-400 font-bold">&bull;</span>
+                  <span>Redis caching for filtered lead queries</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-blue-600 dark:text-blue-400 font-bold">&bull;</span>
+                  <span>Multi-container Docker deployment on Azure</span>
+                </li>
+              </ul>
+
+              <!-- Demo Credentials Box -->
+              <div class="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded text-xs font-mono mb-4">
+                <div class="text-[11px] text-slate-500 mb-1">Live Azure Demo:</div>
+                <div class="text-slate-900 dark:text-white text-[11px] truncate">
+                  demo@crm.com | Demo@123
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex flex-wrap gap-1 font-mono text-[11px] pt-4 border-t border-slate-200 dark:border-slate-800">
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">ASP.NET Core</span>
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">React.js</span>
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">SQL Server</span>
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">Redis</span>
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">Docker</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROJECT 2: PRODUCT INVENTORY MANAGEMENT API -->
+          <div class="p-6 sm:p-8 xl:p-10 bg-white/95 dark:bg-slate-900/95 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3 font-mono text-xs">
+                <span class="px-2 py-0.5 bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-bold">
+                  RESTful Web API
+                </span>
+                <a href="#api-sandbox" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-semibold text-[11px]">
+                  <i data-lucide="play" class="w-3 h-3 fill-current"></i> Test API
+                </a>
+              </div>
+
+              <h3 class="text-xl font-bold text-slate-950 dark:text-white mb-2.5">
+                Product Inventory Management API
+              </h3>
+
+              <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
+                Enterprise RESTful Web API for inventory management with full CRUD operations, structured HTTP methods, request validation, and Entity Framework Core migrations with SQL Server.
+              </p>
+
+              <!-- Highlights -->
+              <ul class="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 font-mono mb-5">
+                <li class="flex items-start gap-1.5">
+                  <span class="text-blue-600 font-bold">&bull;</span>
+                  <span>Entity Framework Core Code-First ORM</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-blue-600 font-bold">&bull;</span>
+                  <span>Repository Pattern &amp; Dependency Injection</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-blue-600 font-bold">&bull;</span>
+                  <span>Swagger / OpenAPI 3.0 Documentation</span>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <div class="flex flex-wrap gap-1 font-mono text-[11px] pt-4 border-t border-slate-200 dark:border-slate-800">
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">C#</span>
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">ASP.NET Core</span>
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">EF Core</span>
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">SQL Server</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROJECT 3: EMPLOYEE MANAGEMENT SYSTEM (from GitHub) -->
+          <div class="p-6 sm:p-8 xl:p-10 bg-white/95 dark:bg-slate-900/95 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3 font-mono text-xs">
+                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold">
+                  .NET Backend
+                </span>
+                <a href="https://github.com/Sohamnaik2586/Employee-Management-System" target="_blank" rel="noopener noreferrer" class="text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1 font-semibold text-[11px]">
+                  <i data-lucide="github" class="w-3.5 h-3.5"></i> GitHub &rarr;
+                </a>
+              </div>
+
+              <h3 class="text-xl font-bold text-slate-950 dark:text-white mb-2.5">
+                Employee Management System
+              </h3>
+
+              <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
+                A structured backend management application for tracking employee profiles, departmental allocations, attendance logs, and payroll records with MS SQL Server database integration.
+              </p>
+
+              <!-- Highlights -->
+              <ul class="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 font-mono mb-5">
+                <li class="flex items-start gap-1.5">
+                  <span class="text-emerald-600 font-bold">&bull;</span>
+                  <span>Department &amp; employee record management</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-emerald-600 font-bold">&bull;</span>
+                  <span>Database CRUD operations with MS SQL Server</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-emerald-600 font-bold">&bull;</span>
+                  <span>Input validation &amp; structured exception handling</span>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <div class="flex flex-wrap gap-1 font-mono text-[11px] pt-4 border-t border-slate-200 dark:border-slate-800">
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">C#</span>
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">ASP.NET Core</span>
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">MS SQL Server</span>
+                <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium">OOP</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 5. INTERACTIVE API & REDIS TESTER                         -->
+    <!-- ========================================================= -->
+    <section id="api-sandbox" class="border-b border-slate-300 dark:border-slate-800 w-full">
+      <div class="w-full max-w-[1720px] mx-auto p-6 sm:p-10 lg:px-14 xl:px-16">
+        
+        <div class="mb-8">
+          <div class="font-mono text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-1">
+            // 03. LIVE ARCHITECTURE SIMULATOR
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+            Interactive REST API &amp; Redis Cache Tester
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+            Execute real API requests against Soham's simulated CRM backend. Compare cold SQL query latency vs Redis cache hits.
+          </p>
+        </div>
+
+        <!-- Terminal Container -->
+        <div class="max-w-6xl mx-auto bg-[#030712] border border-slate-800 shadow-2xl overflow-hidden font-mono text-xs no-trail">
+          
+          <!-- Top bar -->
+          <div class="p-3 bg-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 bg-red-500 rounded-full inline-block"></span>
+              <span class="w-3 h-3 bg-yellow-500 rounded-full inline-block"></span>
+              <span class="w-3 h-3 bg-green-500 rounded-full inline-block"></span>
+              <span class="text-slate-400 text-xs ml-2">api.crm.azurewebsites.net</span>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <button onclick="selectEndpoint('login')" id="btn-ep-login" class="px-3 py-1 bg-purple-600 text-white font-bold text-[11px]">
+                POST /auth/login
+              </button>
+              <button onclick="selectEndpoint('leads_nocache')" id="btn-ep-nocache" class="px-3 py-1 bg-slate-800 text-slate-300 hover:text-white font-medium text-[11px]">
+                GET /leads (Cold SQL)
+              </button>
+              <button onclick="selectEndpoint('leads_cached')" id="btn-ep-cached" class="px-3 py-1 bg-slate-800 text-slate-300 hover:text-white font-medium text-[11px]">
+                GET /leads (Redis Hit ⚡)
+              </button>
+            </div>
+          </div>
+
+          <!-- URL Bar -->
+          <div class="p-3 bg-slate-900 border-b border-slate-800 flex items-center gap-3">
+            <span id="api-method-badge" class="px-2 py-0.5 bg-purple-600 text-white font-bold text-xs">
+              POST
+            </span>
+            <div id="api-url-text" class="flex-1 text-slate-300 truncate">
+              https://api.crm.azurewebsites.net/api/v1/auth/login
+            </div>
+            <button onclick="sendSimulatedApiRequest()" id="api-send-btn" class="px-4 py-1.5 bg-[#00e575] hover:bg-[#00c865] text-black font-bold flex items-center gap-1.5 transition-colors">
+              <i data-lucide="send" class="w-3 h-3"></i>
+              <span>Send Request</span>
+            </button>
+          </div>
+
+          <!-- Stats & Response Output -->
+          <div class="p-5 space-y-3">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 border-b border-slate-800 pb-2">
+              <div class="flex items-center gap-4">
+                <span>Status: <strong id="api-status" class="text-[#00e575]">200 OK</strong></span>
+                <span>Latency: <strong id="api-time" class="text-purple-400">14ms</strong></span>
+                <span>Payload: <strong id="api-size" class="text-slate-300">1.2 KB</strong></span>
+              </div>
+              <div id="api-cache-badge" class="text-[#00e575] font-bold">
+                ⚡ JWT Authentication Validated
+              </div>
+            </div>
+
+            <pre id="api-response-json" class="text-[#00e575] overflow-x-auto max-h-56 leading-relaxed font-mono text-xs">
+{
+  "status": "success",
+  "message": "Authentication successful",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "email": "demo@crm.com",
+      "role": "LeadManager",
+      "permissions": ["Leads.Read", "Leads.Write", "Leads.Export"]
+    },
+    "expiresIn": 86400
+  }
+}
+            </pre>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 6. EXPERIENCE & CAREER TIMELINE                           -->
+    <!-- ========================================================= -->
+    <section id="experience" class="border-b border-slate-300 dark:border-slate-800 w-full">
+      <div class="w-full max-w-[1720px] mx-auto p-6 sm:p-10 lg:px-14 xl:px-16">
+        
+        <div class="mb-10">
+          <div class="font-mono text-xs font-bold text-purple-700 dark:text-purple-400 uppercase tracking-widest mb-1">
+            // 04. ENGINEERING JOURNEY
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+            Professional Experience
+          </h2>
+        </div>
+
+        <div class="space-y-6 max-w-6xl mx-auto">
+          
+          <!-- Experience 1: TechPulse -->
+          <div class="p-6 border border-slate-300 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2 font-mono">
+              <div class="text-base font-bold text-slate-950 dark:text-white">
+                Full Stack .NET Developer <span class="text-purple-700 dark:text-purple-400">@ TechPulse</span>
+              </div>
+              <span class="px-2.5 py-0.5 text-xs font-bold bg-slate-950 dark:bg-white text-white dark:text-black">
+                May 2026 – Present • Pune, India
+              </span>
+            </div>
+            <ul class="space-y-1.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 list-disc list-inside mt-3 font-normal leading-relaxed">
+              <li>Developed and maintained backend services using <strong class="text-black dark:text-white">ASP.NET Core</strong> and <strong class="text-black dark:text-white">C#</strong> for enterprise applications.</li>
+              <li>Implemented and enhanced RESTful APIs while collaborating with frontend developers to integrate application features.</li>
+              <li>Worked with <strong class="text-black dark:text-white">MS SQL Server</strong> to write optimized queries, troubleshoot data-related issues, and support business functionality.</li>
+              <li>Debugged application issues, performed testing, and resolved defects to improve application stability.</li>
+              <li>Collaborated with team members using <strong class="text-black dark:text-white">Git, Azure DevOps</strong>, and Agile Scrum methodologies.</li>
+            </ul>
+          </div>
+
+          <!-- Experience 2: Revature -->
+          <div class="p-6 border border-slate-300 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2 font-mono">
+              <div class="text-base font-bold text-slate-950 dark:text-white">
+                Full Stack .NET Trainee <span class="text-indigo-700 dark:text-indigo-400">@ Revature</span>
+              </div>
+              <span class="px-2.5 py-0.5 text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+                Feb 2026 – Apr 2026 • Remote
+              </span>
+            </div>
+            <ul class="space-y-1.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 list-disc list-inside mt-3 font-normal leading-relaxed">
+              <li>Completed intensive training in <strong class="text-black dark:text-white">ASP.NET Core, C#, React, SQL Server, EF Core</strong>, and REST API development.</li>
+              <li>Developed full-stack applications implementing authentication, CRUD operations, and database integration.</li>
+              <li>Applied Clean Architecture principles, Git version control, and Agile software development practices.</li>
+            </ul>
+          </div>
+
+          <!-- Experience 3: Metainnovix -->
+          <div class="p-6 border border-slate-300 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2 font-mono">
+              <div class="text-base font-bold text-slate-950 dark:text-white">
+                Software Developer Intern <span class="text-blue-700 dark:text-blue-400">@ Metainnovix</span>
+              </div>
+              <span class="px-2.5 py-0.5 text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+                Dec 2024 – May 2025 • Remote
+              </span>
+            </div>
+            <ul class="space-y-1.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 list-disc list-inside mt-3 font-normal leading-relaxed">
+              <li>Developed backend modules using <strong class="text-black dark:text-white">ASP.NET Core and SQL Server</strong> for business applications.</li>
+              <li>Designed and tested REST APIs while following Clean Architecture principles.</li>
+              <li>Collaborated with team members using Git and GitHub in a team-based development environment.</li>
+              <li>Debugged application issues and improved software reliability through testing and issue resolution.</li>
+            </ul>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 7. SKILLS MATRIX & CERTIFICATIONS                         -->
+    <!-- ========================================================= -->
+    <section id="skills" class="border-b border-slate-300 dark:border-slate-800 w-full">
+      <div class="w-full max-w-[1720px] mx-auto p-6 sm:p-10 lg:px-14 xl:px-16">
+        
+        <div class="mb-10">
+          <div class="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mb-1">
+            // 05. CORE COMPETENCIES
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
+            Technical Skills &amp; Certifications
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+          
+          <div class="p-5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800">
+            <div class="font-mono text-xs font-bold text-purple-700 dark:text-purple-400 mb-2">01. LANGUAGES &amp; BACKEND</div>
+            <div class="flex flex-wrap gap-1.5 font-mono text-xs">
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 font-bold">C#</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 font-bold">ASP.NET Core</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">ASP.NET MVC</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">REST APIs</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Entity Framework Core</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">ADO.NET</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Java</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Python</span>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800">
+            <div class="font-mono text-xs font-bold text-blue-700 dark:text-blue-400 mb-2">02. FRONTEND</div>
+            <div class="flex flex-wrap gap-1.5 font-mono text-xs">
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 font-bold">React.js</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 font-bold">JavaScript (ES6+)</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">HTML5</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">CSS3</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Tailwind CSS</span>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800">
+            <div class="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-400 mb-2">03. ARCHITECTURE &amp; MESSAGING</div>
+            <div class="flex flex-wrap gap-1.5 font-mono text-xs">
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 font-bold">Clean Architecture</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Microservices</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">API Gateway</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Event-Driven</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">RabbitMQ</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Kafka (Familiar)</span>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800">
+            <div class="font-mono text-xs font-bold text-amber-700 dark:text-amber-400 mb-2">04. DATABASES &amp; CACHE</div>
+            <div class="flex flex-wrap gap-1.5 font-mono text-xs">
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 font-bold">MS SQL Server</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 font-bold">Redis Cache</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">MongoDB</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Query Optimization</span>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800">
+            <div class="font-mono text-xs font-bold text-cyan-700 dark:text-cyan-400 mb-2">05. DEVOPS &amp; CLOUD</div>
+            <div class="flex flex-wrap gap-1.5 font-mono text-xs">
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 font-bold">Docker</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 font-bold">Microsoft Azure</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Kubernetes (Basics)</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">CI/CD Azure DevOps</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Linux Administration</span>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800">
+            <div class="font-mono text-xs font-bold text-pink-700 dark:text-pink-400 mb-2">06. TESTING &amp; AUTOMATION</div>
+            <div class="flex flex-wrap gap-1.5 font-mono text-xs">
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 font-bold">xUnit</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Moq</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">FakeItEasy</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Selenium</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Playwright</span>
+              <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800">Swagger / Postman</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Verified Certifications -->
+        <div class="border-t border-slate-300 dark:border-slate-800 pt-8">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div class="font-mono text-xs font-bold text-slate-500">// VERIFIED CERTIFICATIONS</div>
+            <a href="https://www.linkedin.com/in/sohamnaik2003/" target="_blank" rel="noopener noreferrer" class="font-mono text-xs text-purple-700 dark:text-purple-400 hover:underline flex items-center gap-1 font-semibold">
+              <i data-lucide="linkedin" class="w-3.5 h-3.5"></i>
+              <span>View all on LinkedIn &rarr;</span>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
+            
+            <!-- CERT 1: IIT ROORKEE -->
+            <a href="https://drive.google.com/file/d/1OpvRNne4KxF2odDhh5orR2Q68m085kEK/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="p-4 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-purple-500 dark:hover:border-purple-400 transition-all flex flex-col justify-between group">
+              <div>
+                <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[10px] mb-1.5">
+                  <span class="font-bold text-purple-700 dark:text-purple-400">IIT Roorkee</span>
+                  <span>May 2025 – Feb 2026</span>
+                </div>
+                <h4 class="font-bold text-slate-950 dark:text-white text-sm group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
+                  Professional Certification in AI and Data Science
+                </h4>
+                <p class="text-slate-600 dark:text-slate-400 text-[11px] mt-1 font-sans">
+                  Machine Learning, Deep Learning, Predictive Modeling &amp; Data Science Architectures.
+                </p>
+              </div>
+              <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-purple-600 dark:text-purple-400 font-bold">
+                <span>View Google Drive Certificate</span>
+                <span class="group-hover:translate-x-0.5 transition-transform">&nearr;</span>
+              </div>
+            </a>
+
+            <!-- CERT 2: MICROSOFT SQL -->
+            <a href="https://learn.microsoft.com/en-us/users/sohamnaik-1053/achievements/8zhuhp4w?ref=https%3A%2F%2Fwww.linkedin.com%2F" target="_blank" rel="noopener noreferrer" class="p-4 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-400 transition-all flex flex-col justify-between group">
+              <div>
+                <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[10px] mb-1.5">
+                  <span class="font-bold text-blue-700 dark:text-blue-400">Microsoft</span>
+                  <span>Sept 2025</span>
+                </div>
+                <h4 class="font-bold text-slate-950 dark:text-white text-sm group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
+                  Microsoft SQL Certification
+                </h4>
+                <p class="text-slate-600 dark:text-slate-400 text-[11px] mt-1 font-sans">
+                  Relational database management, querying, index optimization, and SQL transactions.
+                </p>
+              </div>
+              <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-blue-600 dark:text-blue-400 font-bold">
+                <span>Verify on Microsoft Learn</span>
+                <span class="group-hover:translate-x-0.5 transition-transform">&nearr;</span>
+              </div>
+            </a>
+
+            <!-- CERT 3: NPTEL PYTHON -->
+            <a href="https://archive.nptel.ac.in/content/noc/NOC24/SEM2/Ecertificates/106/noc24-cs113/Course/NPTEL24CS113S86100010404321215.pdf" target="_blank" rel="noopener noreferrer" class="p-4 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-400 transition-all flex flex-col justify-between group">
+              <div>
+                <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[10px] mb-1.5">
+                  <span class="font-bold text-emerald-700 dark:text-emerald-400">NPTEL</span>
+                  <span>Oct 2024</span>
+                </div>
+                <h4 class="font-bold text-slate-950 dark:text-white text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors">
+                  The Joy of Computing using Python
+                </h4>
+                <p class="text-slate-600 dark:text-slate-400 text-[11px] mt-1 font-sans">
+                  Algorithms, data structures, and Python programming (Course ID: NOC24-CS113).
+                </p>
+              </div>
+              <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+                <span>View Official NPTEL PDF</span>
+                <span class="group-hover:translate-x-0.5 transition-transform">&nearr;</span>
+              </div>
+            </a>
+
+            <!-- CERT 4: NPTEL SOFT SKILLS -->
+            <a href="https://archive.nptel.ac.in/content/noc/NOC24/SEM1/Ecertificates/109/noc24-hs26/Course/NPTEL24HS26S36520047230737035.pdf" target="_blank" rel="noopener noreferrer" class="p-4 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-400 transition-all flex flex-col justify-between group">
+              <div>
+                <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[10px] mb-1.5">
+                  <span class="font-bold text-amber-700 dark:text-amber-400">NPTEL</span>
+                  <span>May 2024</span>
+                </div>
+                <h4 class="font-bold text-slate-950 dark:text-white text-sm group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
+                  Enhancing Soft Skills &amp; Personality
+                </h4>
+                <p class="text-slate-600 dark:text-slate-400 text-[11px] mt-1 font-sans">
+                  Interpersonal communication, emotional intelligence &amp; professional development (NOC24-HS26).
+                </p>
+              </div>
+              <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-amber-600 dark:text-amber-400 font-bold">
+                <span>View Official NPTEL PDF</span>
+                <span class="group-hover:translate-x-0.5 transition-transform">&nearr;</span>
+              </div>
+            </a>
+
+            <!-- CERT 5: UDEMY LINUX -->
+            <a href="https://www.udemy.com/certificate/UC-9e0fe2fc-6402-43f1-ad69-750e1b76b31c/" target="_blank" rel="noopener noreferrer" class="p-4 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-cyan-500 dark:hover:border-cyan-400 transition-all flex flex-col justify-between group">
+              <div>
+                <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[10px] mb-1.5">
+                  <span class="font-bold text-cyan-700 dark:text-cyan-400">Udemy</span>
+                  <span>Apr 2024</span>
+                </div>
+                <h4 class="font-bold text-slate-950 dark:text-white text-sm group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
+                  Linux Administration Certification
+                </h4>
+                <p class="text-slate-600 dark:text-slate-400 text-[11px] mt-1 font-sans">
+                  Linux shell commands, server administration, permissions, CLI tooling, and network services.
+                </p>
+              </div>
+              <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-cyan-600 dark:text-cyan-400 font-bold">
+                <span>Verify on Udemy</span>
+                <span class="group-hover:translate-x-0.5 transition-transform">&nearr;</span>
+              </div>
+            </a>
+
+            <!-- CERT 6: UDEMY JAVA -->
+            <a href="https://www.udemy.com/certificate/UC-7a0c85f4-0302-44e1-98da-139912b82dcf/" target="_blank" rel="noopener noreferrer" class="p-4 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-400 transition-all flex flex-col justify-between group">
+              <div>
+                <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[10px] mb-1.5">
+                  <span class="font-bold text-indigo-700 dark:text-indigo-400">Udemy</span>
+                  <span>Apr 2024</span>
+                </div>
+                <h4 class="font-bold text-slate-950 dark:text-white text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
+                  The Complete Java Certification Course
+                </h4>
+                <p class="text-slate-600 dark:text-slate-400 text-[11px] mt-1 font-sans">
+                  Core Object-Oriented Programming, enterprise Java architecture, and design patterns.
+                </p>
+              </div>
+              <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
+                <span>Verify on Udemy</span>
+                <span class="group-hover:translate-x-0.5 transition-transform">&nearr;</span>
+              </div>
+            </a>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 8. CONTACT & FOOTER                                       -->
+    <!-- ========================================================= -->
+    <section id="contact" class="p-6 sm:p-10 lg:p-16 border-b border-slate-300 dark:border-slate-800 w-full font-mono text-xs">
+      <div class="max-w-5xl mx-auto bg-[#030712] border border-slate-800 p-8 sm:p-12 text-white shadow-2xl space-y-6 text-center no-trail">
+        
+        <div class="text-[#00e575] text-sm font-bold tracking-widest">// LET'S BUILD RESILIENT SYSTEMS</div>
+        
+        <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-white font-sans">
+          Ready to contribute to your engineering team.
+        </h2>
+
+        <p class="text-slate-400 max-w-lg mx-auto text-sm font-sans">
+          Based in Pune, India. Open to Full Stack .NET Developer &amp; Backend Engineer roles.
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center gap-3 pt-4">
+          <a href="mailto:sohamnaik2586@gmail.com" class="px-5 py-3 bg-[#00e575] hover:bg-[#00c865] text-black font-bold flex items-center gap-2 transition-colors">
+            <i data-lucide="mail" class="w-4 h-4"></i>
+            <span>sohamnaik2586@gmail.com</span>
+          </a>
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=sohamnaik2586@gmail.com" target="_blank" rel="noopener noreferrer" class="px-5 py-3 bg-[#ea4335] hover:bg-[#d93025] text-white font-bold flex items-center gap-2 transition-colors shadow-sm" title="Compose directly in Gmail">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span>Compose in Gmail &rarr;</span>
+          </a>
+          <a href="https://www.linkedin.com/in/sohamnaik2003/" target="_blank" rel="noopener noreferrer" class="px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold flex items-center gap-2 transition-colors">
+            <i data-lucide="linkedin" class="w-4 h-4"></i>
+            <span>LinkedIn Profile &rarr;</span>
+          </a>
+          <a href="https://github.com/Sohamnaik2586" target="_blank" rel="noopener noreferrer" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-bold flex items-center gap-2 transition-colors">
+            <i data-lucide="github" class="w-4 h-4"></i>
+            <span>GitHub Profile</span>
+          </a>
+          <a href="tel:+919307725855" class="px-4 py-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white font-medium flex items-center gap-2 transition-colors">
+            <i data-lucide="phone" class="w-4 h-4"></i>
+            <span>+91-9307725855</span>
+          </a>
+          <button onclick="copyEmailToClipboard()" class="px-4 py-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-colors">
+            <span id="copy-email-label">Copy Email</span>
+          </button>
+        </div>
+
+        <div class="pt-10 text-slate-500 text-[11px] border-t border-slate-900">
+          © 2026 Soham Naik. Clean Architecture • ASP.NET Core • React.js
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Floating Quick Comparison Switcher (Compare Plain White vs Grid live) -->
+  <div id="bg-switcher-pill" class="fixed bottom-5 right-5 z-40 bg-slate-900/95 text-white px-3.5 py-2 shadow-2xl border border-slate-700 flex items-center gap-2.5 font-mono text-xs backdrop-blur-md select-none transition-all">
+    <span class="text-slate-400 text-[11px] flex items-center gap-1.5">
+      <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-400"></i>
+      <span>Compare BG:</span>
+    </span>
+    <button onclick="setBackground('plain')" id="pill-bg-plain" class="px-2.5 py-1 font-bold text-[11px] bg-white text-black shadow-sm transition-all">
+      Plain White
+    </button>
+    <button onclick="setBackground('grid')" id="pill-bg-grid" class="px-2.5 py-1 font-bold text-[11px] text-slate-400 hover:text-white transition-all">
+      Grid
+    </button>
+    <button onclick="dismissBgPill()" class="text-slate-500 hover:text-slate-300 ml-1 text-xs" title="Dismiss this comparison pill">
+      ✕
+    </button>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL: GITHUB UNIVERSE STYLE "DEV QUEST" MINIGAME          -->
+  <!-- ========================================================= -->
+  <div id="game-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-[#0b0f19] border border-slate-700 rounded-none max-w-2xl w-full p-4 sm:p-6 shadow-2xl flex flex-col relative font-mono text-xs">
+      
+      <!-- Modal Close -->
+      <button onclick="closeGameModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-white transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Game Header -->
+      <div class="flex items-center gap-3 mb-4">
+        <span class="w-3 h-3 bg-[#00e575] inline-block animate-pulse"></span>
+        <div>
+          <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+            DEV-QUEST / SO-HAM ARCHITECTURE RUNNER
+          </h3>
+          <p class="text-slate-400 text-[11px]">Catch all 16+ technologies from Soham's resume while dodging production bugs!</p>
+        </div>
+      </div>
+
+      <!-- HUD -->
+      <div class="flex items-center justify-between bg-black px-4 py-2 border border-slate-800 mb-3">
+        <div>Score: <span id="game-score" class="text-[#00e575] font-bold text-sm">0</span></div>
+        <div>High Score: <span id="game-modal-highscore" class="text-yellow-400 font-bold text-sm">0</span></div>
+        <div>Health: <span id="game-health" class="text-red-400 font-bold text-sm">❤❤❤</span></div>
+        <div>Tech Level: <span id="game-level" class="text-purple-400 font-bold">L1: Backend Core</span></div>
+      </div>
+
+      <!-- Arcade Canvas Container -->
+      <div class="relative w-full bg-[#030712] border border-slate-800 flex items-center justify-center h-80 sm:h-96 overflow-hidden">
+        <canvas id="arcade-canvas" class="w-full h-full block"></canvas>
+        
+        <!-- Game Start / Over Overlay -->
+        <div id="game-overlay" class="absolute inset-0 bg-black/90 flex flex-col items-center justify-center p-6 text-center space-y-4">
+          <div class="font-mono text-[#00e575] text-xs font-bold tracking-widest">// MISSION BRIEFING</div>
+          <h4 id="game-overlay-title" class="text-2xl font-black text-white font-sans">Protect Production!</h4>
+          <p id="game-overlay-desc" class="text-xs text-slate-300 max-w-sm leading-relaxed">
+            Move mouse or use <kbd class="px-1.5 py-0.5 bg-slate-800 text-slate-200">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-800 text-slate-200">→</kbd> to catch <span class="text-[#00e575] font-bold">16+ .NET & Cloud technologies</span> (C#, Redis, Docker, JWT, Azure, Clean Arch, etc.) and avoid <span class="text-red-400 font-bold">NullRefs, 500s, &amp; Deadlocks</span>!
+          </p>
+          <button id="game-start-btn" onclick="startArcadeGame()" class="px-6 py-3 bg-[#00e575] hover:bg-[#00c865] text-black font-mono font-bold text-xs shadow-lg transition-all">
+            START MISSION ▶
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Quest Dialogue / Technology Spec unlocked -->
+      <div class="mt-3 bg-black border border-slate-800 p-3 font-mono text-[11px] text-slate-300 flex items-center gap-3">
+        <span class="px-2 py-0.5 bg-purple-600 text-white font-bold shrink-0">LOG</span>
+        <p id="game-dialogue-text" class="truncate text-slate-200">
+          Ready to launch. Catch technologies to learn about Soham's hands-on experience!
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- JAVASCRIPT: ENGINES (TRAIL, GAME, SANDBOX, AUDIO)         -->
+  <!-- ========================================================= -->
+  <script>
+    lucide.createIcons();
+
+    // =========================================================
+    // 1. LIVE UPTIME TICKER
+    // =========================================================
+    let secondsElapsed = 0;
+    setInterval(() => {
+      secondsElapsed++;
+      const hrs = String(Math.floor(secondsElapsed / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((secondsElapsed % 3600) / 60)).padStart(2, '0');
+      const secs = String(secondsElapsed % 60).padStart(2, '0');
+      const el = document.getElementById('live-timer');
+      if (el) el.innerText = `${hrs}:${mins}:${secs}`;
+    }, 1000);
+
+    // =========================================================
+    // 2. GITHUB UNIVERSE PIXEL-SNAPPED TILE TRAIL ENGINE
+    // =========================================================
+    const trailCanvas = document.getElementById('cursor-trail-canvas');
+    const ctx = trailCanvas.getContext('2d');
+    
+    // Grid matches the background grid lines (20px - sleek pointer size)
+    const GRID_SIZE = 20;
+    let canvasWidth = window.innerWidth;
+    let canvasHeight = window.innerHeight;
+
+    function resizeTrailCanvas() {
+      canvasWidth = window.innerWidth;
+      canvasHeight = window.innerHeight;
+      trailCanvas.width = canvasWidth;
+      trailCanvas.height = canvasHeight;
+    }
+    window.addEventListener('resize', resizeTrailCanvas);
+    resizeTrailCanvas();
+
+    // Vibrant saturated colors matching GitHub Universe / screenshot 1
+    const UNIVERSE_COLORS = [
+      '#ff2d78', // Hot Magenta/Pink
+      '#8a2be2', // Electric Royal Purple
+      '#cca000', // Mustard Gold / Ochre
+      '#1a56ff', // Saturated Cobalt Blue
+      '#00c853', // Vivid Emerald Green
+      '#e65100', // Saturated Terracotta / Orange
+      '#9933ff', // Lavender Violet
+      '#00b0ff', // Vivid Sky Cyan
+    ];
+
+    // Single-character code glyphs matching reference image: '.', '(', '/', '-', '=', '{', '}', etc.
+    const GLYPHS = ['.', '(', ')', '/', '-', '=', '{', '}', ';', '>', '<', '*', '+', '$', '#', '&', '~', '!'];
+
+    const activeGridTiles = new Map(); // key "col,row" -> tile object
+
+    function lightUpGridCell(col, row) {
+      if (col < 0 || row < 0 || col * GRID_SIZE >= canvasWidth || row * GRID_SIZE >= canvasHeight) return;
+
+      const key = `${col},${row}`;
+      const existing = activeGridTiles.get(key);
+      if (!existing) {
+        activeGridTiles.set(key, {
+          col,
+          row,
+          color: UNIVERSE_COLORS[Math.floor(Math.random() * UNIVERSE_COLORS.length)],
+          glyph: GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
+          alpha: 1.0,
+          decay: 0.022 // smooth, graceful fade
+        });
+      } else {
+        existing.alpha = 1.0; // instant reactive re-illumination
+      }
+    }
+
+    let prevX = null;
+    let prevY = null;
+
+    function handlePointer(x, y) {
+      const col = Math.floor(x / GRID_SIZE);
+      const row = Math.floor(y / GRID_SIZE);
+
+      if (prevX !== null && prevY !== null) {
+        const dx = x - prevX;
+        const dy = y - prevY;
+        const dist = Math.hypot(dx, dy);
+
+        // High-density step interpolation: guarantees 100% reactive coverage with 0 gaps at any speed
+        if (dist > 1.5) {
+          const steps = Math.max(1, Math.min(Math.ceil(dist / (GRID_SIZE * 0.45)), 32));
+          for (let i = 1; i <= steps; i++) {
+            const ix = prevX + (dx * i) / steps;
+            const iy = prevY + (dy * i) / steps;
+            lightUpGridCell(Math.floor(ix / GRID_SIZE), Math.floor(iy / GRID_SIZE));
+          }
+        }
+      }
+
+      lightUpGridCell(col, row);
+      prevX = x;
+      prevY = y;
+    }
+
+    // High-frequency pointer events for maximum responsiveness
+    window.addEventListener('pointermove', (e) => {
+      handlePointer(e.clientX, e.clientY);
+    }, { passive: true });
+
+    window.addEventListener('pointerdown', (e) => {
+      handlePointer(e.clientX, e.clientY);
+    }, { passive: true });
+
+    window.addEventListener('pointerleave', () => {
+      prevX = null;
+      prevY = null;
+    });
+
+    // Main 60-120fps GPU-optimized render loop
+    function renderUniverseTrail() {
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+      if (activeGridTiles.size > 0) {
+        // Set canvas text properties ONCE per frame for 10x higher rendering throughput
+        ctx.font = 'bold 11px "Fira Code", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        activeGridTiles.forEach((tile, key) => {
+          tile.alpha -= tile.decay;
+          if (tile.alpha <= 0) {
+            activeGridTiles.delete(key);
+            return;
+          }
+
+          const px = tile.col * GRID_SIZE;
+          const py = tile.row * GRID_SIZE;
+
+          ctx.globalAlpha = tile.alpha;
+
+          // Draw solid square tile that fits exactly within the hairline grid
+          ctx.fillStyle = tile.color;
+          ctx.fillRect(px + 1, py + 1, GRID_SIZE - 1, GRID_SIZE - 1);
+
+          // Draw sharp centered character glyph
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(tile.glyph, px + GRID_SIZE / 2, py + GRID_SIZE / 2 + 0.5);
+        });
+
+        ctx.globalAlpha = 1.0; // clean reset
+      }
+
+      requestAnimationFrame(renderUniverseTrail);
+    }
+    renderUniverseTrail();
+
+
+    // =========================================================
+    // 3. SOUND SYNTHESIZER (Web Audio API)
+    // =========================================================
+    let audioCtx = null;
+    let isSoundOn = false;
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function toggleAudio() {
+      initAudio();
+      isSoundOn = !isSoundOn;
+      const icon = document.getElementById('sound-icon');
+      if (isSoundOn) {
+        icon.setAttribute('data-lucide', 'volume-2');
+        playTone(587.33, 0.08, 'sine');
+      } else {
+        icon.setAttribute('data-lucide', 'volume-x');
+      }
+      lucide.createIcons();
+    }
+
+    function playTone(freq, duration = 0.1, type = 'sine') {
+      if (!isSoundOn || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.14, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+
+    // =========================================================
+    // 4. THEME ENGINE (Light / Dark)
+    // =========================================================
+    let isDark = false; // default to GitHub Universe clean light mode as requested
+
+    function setTheme(dark) {
+      isDark = dark;
+      const root = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      if (isDark) {
+        root.classList.add('dark');
+        icon.setAttribute('data-lucide', 'sun');
+      } else {
+        root.classList.remove('dark');
+        icon.setAttribute('data-lucide', 'moon');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleTheme() {
+      setTheme(!isDark);
+      playTone(440, 0.05, 'triangle');
+    }
+
+    // =========================================================
+    // 4B. BACKGROUND STYLE ENGINE (Plain White vs Grid)
+    // =========================================================
+    let currentBgStyle = localStorage.getItem('soham_bg_style') || 'plain';
+
+    function setBackground(style, playSound = true) {
+      currentBgStyle = style;
+      localStorage.setItem('soham_bg_style', currentBgStyle);
+      const isGrid = (style === 'grid');
+
+      if (isGrid) {
+        document.body.classList.add('theme-grid');
+      } else {
+        document.body.classList.remove('theme-grid');
+      }
+
+      // Update Header Toggle Button
+      const bgIcon = document.getElementById('bg-toggle-icon');
+      const bgLabel = document.getElementById('bg-toggle-label');
+      if (bgIcon) {
+        bgIcon.setAttribute('data-lucide', isGrid ? 'grid' : 'square');
+      }
+      if (bgLabel) {
+        bgLabel.innerText = isGrid ? 'Grid BG' : 'Plain BG';
+      }
+
+      // Update Floating Switcher Pill
+      const pillPlain = document.getElementById('pill-bg-plain');
+      const pillGrid = document.getElementById('pill-bg-grid');
+      if (pillPlain && pillGrid) {
+        if (isGrid) {
+          pillGrid.className = 'px-2.5 py-1 font-bold text-[11px] bg-purple-600 text-white shadow-sm transition-all';
+          pillPlain.className = 'px-2.5 py-1 font-bold text-[11px] text-slate-400 hover:text-white transition-all';
+        } else {
+          pillPlain.className = 'px-2.5 py-1 font-bold text-[11px] bg-white text-black shadow-sm transition-all';
+          pillGrid.className = 'px-2.5 py-1 font-bold text-[11px] text-slate-400 hover:text-white transition-all';
+        }
+      }
+
+      lucide.createIcons();
+
+      if (playSound && typeof playTone === 'function') {
+        playTone(isGrid ? 587.33 : 783.99, 0.05, 'sine');
+      }
+    }
+
+    function toggleBackground() {
+      setBackground(currentBgStyle === 'plain' ? 'grid' : 'plain');
+    }
+
+    function dismissBgPill() {
+      const pill = document.getElementById('bg-switcher-pill');
+      if (pill) {
+        pill.style.opacity = '0';
+        pill.style.transform = 'translateY(10px)';
+        setTimeout(() => pill.remove(), 250);
+      }
+    }
+
+    // Keyboard shortcut 'G' or 'g' to toggle background
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'g' || e.key === 'G') {
+        toggleBackground();
+      }
+    });
+
+    // Initialize with plain background as requested
+    setBackground(currentBgStyle, false);
+
+
+    // =========================================================
+    // 5. DEV QUEST: 16+ TECHNOLOGIES & SOFTWARE BUGS MINIGAME
+    // =========================================================
+    const gameModal = document.getElementById('game-modal');
+    const arcadeCanvas = document.getElementById('arcade-canvas');
+    const gCtx = arcadeCanvas.getContext('2d');
+
+    let gameRunning = false;
+    let gameScore = 0;
+    let highScore = parseInt(localStorage.getItem('soham_highscore') || '0', 10);
+    let gameLives = 3;
+    let paddleX = 150;
+    const P_WIDTH = 90;
+    const P_HEIGHT = 14;
+
+    document.getElementById('nav-high-score').innerText = highScore;
+    document.getElementById('game-modal-highscore').innerText = highScore;
+
+    // Full Stack Universe: 16+ Technologies from Soham's Resume
+    const TECH_STACK_ITEMS = [
+      { name: 'ASP.NET Core', color: '#512bd4', label: '🚀 ASP.NET Core', pts: 25, quote: "ASP.NET Core: Built high-throughput REST APIs and microservices." },
+      { name: 'C# 12', color: '#9b4dca', label: '⚡ C# 12', pts: 20, quote: "C#: Applied pattern matching, records, and LINQ optimization." },
+      { name: 'React.js', color: '#00d8ff', label: '⚛️ React.js', pts: 25, quote: "React.js: Engineered responsive, state-driven interfaces." },
+      { name: 'Redis Cache', color: '#ef4444', label: '⚡ Redis Cache', pts: 30, quote: "Redis: Slashed database latency by 92% with distributed caching." },
+      { name: 'SQL Server', color: '#0284c7', label: '🗄️ MS SQL Server', pts: 20, quote: "SQL Server: Authored complex queries, indexing & stored procedures." },
+      { name: 'Clean Architecture', color: '#10b981', label: '🏛️ Clean Arch', pts: 35, quote: "Clean Architecture: Enforced separation: API -> BLL -> DAL." },
+      { name: 'Docker', color: '#0284c7', label: '🐳 Docker', pts: 25, quote: "Docker: Containerized full-stack services with multi-stage builds." },
+      { name: 'JWT Auth', color: '#f59e0b', label: '🛡️ JWT Auth', pts: 25, quote: "JWT Auth: Built role-based access control (Admin & Sales Rep)." },
+      { name: 'Azure Cloud', color: '#0078d4', label: '☁️ Azure Cloud', pts: 30, quote: "Azure: Deployed live CRM web apps and container services." },
+      { name: 'Entity Framework', color: '#6366f1', label: '📦 EF Core', pts: 20, quote: "EF Core: Managed code-first migrations & relational mapping." },
+      { name: 'xUnit', color: '#8b5cf6', label: '🧪 xUnit Tests', pts: 25, quote: "xUnit: Written unit & integration test suites using Moq." },
+      { name: 'RabbitMQ', color: '#ff6600', label: '🐇 RabbitMQ', pts: 30, quote: "RabbitMQ: Handled asynchronous event-driven message queues." },
+      { name: 'Kubernetes', color: '#326ce5', label: '☸️ Kubernetes', pts: 30, quote: "Kubernetes: Configured pod orchestration and cluster basics." },
+      { name: 'MongoDB', color: '#13aa52', label: '🍃 MongoDB', pts: 20, quote: "MongoDB: Document storage for high-velocity unstructured data." },
+      { name: 'Playwright', color: '#2e7d32', label: '🎭 Playwright', pts: 25, quote: "Playwright: Automated end-to-end browser regression workflows." },
+      { name: 'Swagger', color: '#85ea2d', label: '📑 Swagger/OpenAPI', pts: 15, quote: "Swagger: Documented RESTful contracts for seamless integration." }
+    ];
+
+    // Real Production Bugs to Dodge!
+    const BUG_ITEMS = [
+      { name: 'NullRef', color: '#dc2626', label: '🐛 NullReference', quote: "NullReferenceException! Nullable reference types enabled." },
+      { name: 'CORS', color: '#b91c1c', label: '⚡ CORS Blocked', quote: "CORS Error! Configured WithOrigins policy in Program.cs." },
+      { name: '401', color: '#991b1b', label: '🔒 401 Unauthorized', quote: "401 Unauthorized! Missing Bearer token in request header." },
+      { name: '500', color: '#7f1d1d', label: '💥 500 Server Error', quote: "500 Internal Server Error! Global exception middleware caught it." },
+      { name: 'Deadlock', color: '#881337', label: '🐢 SQL Deadlock', quote: "Database Deadlock! Implemented async queries & NoTracking." },
+      { name: 'Leak', color: '#4c0519', label: '⚠️ Memory Leak', quote: "Memory Leak! IDisposable pattern implemented cleanly." }
+    ];
+
+    const entities = [];
+    let gameTimer = 0;
+
+    function openGameModal() {
+      initAudio();
+      gameModal.classList.remove('hidden');
+      resizeArcade();
+      playTone(523.25, 0.08, 'sine');
+    }
+
+    function closeGameModal() {
+      gameModal.classList.add('hidden');
+      gameRunning = false;
+    }
+
+    function resizeArcade() {
+      arcadeCanvas.width = arcadeCanvas.parentElement.clientWidth;
+      arcadeCanvas.height = arcadeCanvas.parentElement.clientHeight;
+      paddleX = (arcadeCanvas.width - P_WIDTH) / 2;
+    }
+
+    arcadeCanvas.addEventListener('mousemove', (e) => {
+      const rect = arcadeCanvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      paddleX = Math.max(0, Math.min(arcadeCanvas.width - P_WIDTH, mouseX - P_WIDTH / 2));
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (!gameRunning) return;
+      if (e.key === 'ArrowLeft') paddleX = Math.max(0, paddleX - 30);
+      else if (e.key === 'ArrowRight') paddleX = Math.min(arcadeCanvas.width - P_WIDTH, paddleX + 30);
+    });
+
+    function startArcadeGame() {
+      document.getElementById('game-overlay').classList.add('hidden');
+      gameRunning = true;
+      gameScore = 0;
+      gameLives = 3;
+      entities.length = 0;
+      updateGameHud();
+      document.getElementById('game-dialogue-text').innerText = "Catch the falling .NET technologies & dodge production bugs!";
+      requestAnimationFrame(gameLoop);
+    }
+
+    function updateGameHud() {
+      document.getElementById('game-score').innerText = gameScore;
+      document.getElementById('game-health').innerText = '❤'.repeat(gameLives) || '💀';
+      
+      let level = "L1: Backend Core";
+      if (gameScore >= 350) level = "L4: Principal Architect 🏆";
+      else if (gameScore >= 200) level = "L3: Cloud & Docker 🐳";
+      else if (gameScore >= 100) level = "L2: Caching & Clean Arch ⚡";
+      document.getElementById('game-level').innerText = level;
+    }
+
+    function gameLoop() {
+      if (!gameRunning) return;
+
+      gCtx.clearRect(0, 0, arcadeCanvas.width, arcadeCanvas.height);
+
+      // Draw subtle grid lines in game canvas
+      gCtx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+      gCtx.lineWidth = 1;
+      for (let x = 0; x < arcadeCanvas.width; x += 36) {
+        gCtx.beginPath();
+        gCtx.moveTo(x, 0);
+        gCtx.lineTo(x, arcadeCanvas.height);
+        gCtx.stroke();
+      }
+
+      // Draw Paddle (Soham's .NET Engine)
+      gCtx.fillStyle = '#00e575';
+      gCtx.fillRect(paddleX, arcadeCanvas.height - 22, P_WIDTH, P_HEIGHT);
+      gCtx.fillStyle = '#000000';
+      gCtx.font = 'bold 9px "Fira Code", monospace';
+      gCtx.textAlign = 'center';
+      gCtx.fillText('[ .NET CORE ENGINE ]', paddleX + P_WIDTH / 2, arcadeCanvas.height - 12);
+
+      // Spawn falling items
+      gameTimer++;
+      if (gameTimer % 38 === 0) {
+        const isBug = Math.random() < 0.32; // 32% chance of bug, 68% chance of tech
+        const pool = isBug ? BUG_ITEMS : TECH_STACK_ITEMS;
+        const item = pool[Math.floor(Math.random() * pool.length)];
+
+        entities.push({
+          x: Math.random() * (arcadeCanvas.width - 100) + 10,
+          y: -25,
+          speed: 2.2 + Math.random() * 1.6,
+          isBug,
+          config: item
+        });
+      }
+
+      // Update & Render falling entities
+      for (let i = entities.length - 1; i >= 0; i--) {
+        const ent = entities[i];
+        ent.y += ent.speed;
+
+        // Render pill
+        gCtx.fillStyle = ent.config.color;
+        gCtx.fillRect(ent.x, ent.y, 88, 22);
+
+        // Render label text
+        gCtx.fillStyle = '#ffffff';
+        gCtx.font = 'bold 10px "Fira Code", monospace';
+        gCtx.textAlign = 'center';
+        gCtx.fillText(ent.config.label, ent.x + 44, ent.y + 15);
+
+        // Check collision with paddle
+        if (
+          ent.y + 22 >= arcadeCanvas.height - 22 &&
+          ent.y <= arcadeCanvas.height - 8 &&
+          ent.x + 88 >= paddleX &&
+          ent.x <= paddleX + P_WIDTH
+        ) {
+          if (!ent.isBug) {
+            gameScore += ent.config.pts;
+            playTone(880, 0.08, 'triangle');
+            document.getElementById('game-dialogue-text').innerText = ent.config.quote;
+
+            if (gameScore > highScore) {
+              highScore = gameScore;
+              localStorage.setItem('soham_highscore', highScore);
+              document.getElementById('nav-high-score').innerText = highScore;
+              document.getElementById('game-modal-highscore').innerText = highScore;
+            }
+
+            if (gameScore === 100 || gameScore === 250) {
+              triggerMiniConfetti();
+            }
+          } else {
+            gameLives--;
+            playTone(160, 0.2, 'sawtooth');
+            document.getElementById('game-dialogue-text').innerText = ent.config.quote;
+
+            if (gameLives <= 0) {
+              endArcadeGame();
+              return;
+            }
+          }
+          updateGameHud();
+          entities.splice(i, 1);
+          continue;
+        }
+
+        // Cleanup out-of-bounds
+        if (ent.y > arcadeCanvas.height) {
+          entities.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    function endArcadeGame() {
+      gameRunning = false;
+      const overlay = document.getElementById('game-overlay');
+      overlay.classList.remove('hidden');
+      document.getElementById('game-overlay-title').innerText = "Mission Debrief";
+      document.getElementById('game-overlay-desc').innerText = `You scored ${gameScore} points defending production! Soham is ready to bring this resilience and technical mastery to your engineering team.`;
+      document.getElementById('game-start-btn').innerText = "PLAY AGAIN ↺";
+
+      if (gameScore >= 100) {
+        triggerConfetti();
+      }
+    }
+
+
+    // =========================================================
+    // 6. API SANDBOX CLIENT
+    // =========================================================
+    const sandboxEndpoints = {
+      login: {
+        method: 'POST',
+        url: 'https://api.crm.azurewebsites.net/api/v1/auth/login',
+        status: '200 OK',
+        time: '14ms',
+        size: '1.2 KB',
+        cache: '⚡ JWT Authentication Validated',
+        json: {
+          status: "success",
+          token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+          user: { email: "demo@crm.com", role: "LeadManager" },
+          expiresIn: 86400
+        }
+      },
+      leads_nocache: {
+        method: 'GET',
+        url: 'https://api.crm.azurewebsites.net/api/v1/leads?page=1&pageSize=10',
+        status: '200 OK',
+        time: '184ms',
+        size: '8.4 KB',
+        cache: '🐢 Cold SQL Server Query Execution',
+        json: {
+          meta: { page: 1, pageSize: 10, totalCount: 1420, plan: "Index Scan" },
+          leads: [
+            { id: 101, company: "Acme Corp", status: "Negotiation", deal: "$45,000" },
+            { id: 102, company: "Vertex Labs", status: "Qualified", deal: "$18,500" }
+          ]
+        }
+      },
+      leads_cached: {
+        method: 'GET',
+        url: 'https://api.crm.azurewebsites.net/api/v1/leads?page=1&cached=true',
+        status: '200 OK',
+        time: '12ms',
+        size: '8.4 KB',
+        cache: '⚡ Redis Cache HIT (93% Latency Drop!)',
+        json: {
+          meta: { cacheKey: "crm:leads:page:1", ttlRemaining: "284s", hit: true },
+          leads: [
+            { id: 101, company: "Acme Corp", status: "Negotiation", deal: "$45,000" },
+            { id: 102, company: "Vertex Labs", status: "Qualified", deal: "$18,500" }
+          ]
+        }
+      }
+    };
+
+    let selectedEndpoint = 'login';
+
+    function selectEndpoint(key) {
+      selectedEndpoint = key;
+      const data = sandboxEndpoints[key];
+
+      document.getElementById('api-method-badge').innerText = data.method;
+      document.getElementById('api-url-text').innerText = data.url;
+
+      ['login', 'nocache', 'cached'].forEach(k => {
+        const btn = document.getElementById(`btn-ep-${k}`);
+        if (k === key || (k === 'nocache' && key === 'leads_nocache') || (k === 'cached' && key === 'leads_cached')) {
+          btn.className = 'px-3 py-1 bg-purple-600 text-white font-bold text-[11px]';
+        } else {
+          btn.className = 'px-3 py-1 bg-slate-800 text-slate-300 hover:text-white font-medium text-[11px]';
+        }
+      });
+
+      sendSimulatedApiRequest();
+    }
+
+    function sendSimulatedApiRequest() {
+      const data = sandboxEndpoints[selectedEndpoint];
+      const btn = document.getElementById('api-send-btn');
+      btn.innerHTML = '<span>Sending...</span>';
+      playTone(400, 0.05, 'sine');
+
+      setTimeout(() => {
+        document.getElementById('api-status').innerText = data.status;
+        document.getElementById('api-time').innerText = data.time;
+        document.getElementById('api-size').innerText = data.size;
+        document.getElementById('api-cache-badge').innerText = data.cache;
+        document.getElementById('api-response-json').innerText = JSON.stringify(data.json, null, 2);
+        btn.innerHTML = '<i data-lucide="send" class="w-3 h-3"></i><span>Send Request</span>';
+        lucide.createIcons();
+        playTone(880, 0.08, 'triangle');
+      }, 200);
+    }
+
+
+    // =========================================================
+    // 7. UTILITY & CLIPBOARD
+    // =========================================================
+    let isRunningSuite = false;
+
+    function playTestTone(freq, duration = 0.08, type = 'triangle') {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function runVirtualTests() {
+      if (isRunningSuite) return;
+      isRunningSuite = true;
+
+      playTestTone(440, 0.05, 'sine');
+
+      const btn = document.getElementById('run-suite-btn');
+      const label = document.getElementById('run-suite-label');
+      const icon = document.getElementById('run-suite-icon');
+      const output = document.getElementById('code-output');
+      const jitIndicator = document.getElementById('jit-indicator');
+      const jitLabel = document.getElementById('jit-label');
+
+      if (btn) btn.classList.add('opacity-80', 'cursor-not-allowed');
+      if (label) label.innerText = "Building...";
+      if (icon) icon.setAttribute('data-lucide', 'loader-2');
+      if (jitIndicator) jitIndicator.className = "w-1.5 h-1.5 bg-amber-400 rounded-full animate-ping";
+      if (jitLabel) jitLabel.innerText = "Compiling IL...";
+      lucide.createIcons();
+
+      // Step 1: Start dotnet test compilation
+      output.innerHTML = `
+        <p class="text-slate-400">&gt; dotnet test --logger "console;verbosity=normal"</p>
+        <p class="text-amber-400/90">&gt; [MSBuild] Compiling SohamNaik.CleanArchitecture.sln (Release)...</p>
+      `;
+
+      // Step 2: Running xUnit tests
+      setTimeout(() => {
+        playTestTone(523.25, 0.06, 'triangle');
+        if (label) label.innerText = "Running Tests...";
+        if (jitIndicator) jitIndicator.className = "w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse";
+        if (jitLabel) jitLabel.innerText = "xUnit Running";
+
+        output.innerHTML = `
+          <p class="text-slate-500">&gt; dotnet test --logger "console;verbosity=normal"</p>
+          <p class="text-blue-300">[xUnit.net 00:00:00.28] Discovering &amp; executing 52 test fixtures...</p>
+          <p class="text-[#00e575]">  ✓ LeadManager.Tests.CreateLead_Returns201 (14ms)</p>
+          <p class="text-[#00e575]">  ✓ LeadManager.Tests.RedisCacheHit_Returns12ms (2ms)</p>
+        `;
+      }, 550);
+
+      // Step 3: Complete test suite
+      setTimeout(() => {
+        playTestTone(659.25, 0.08, 'triangle');
+        setTimeout(() => playTestTone(880, 0.14, 'triangle'), 80);
+
+        output.innerHTML = `
+          <p class="text-slate-500">&gt; dotnet test --filter UnitTests</p>
+          <p class="text-[#00e575]">✓ 52 Passed, 0 Failed, 0 Skipped (100% Passing)</p>
+          <p class="text-purple-300">&gt; Clean Architecture validated. Ready to ship to production.</p>
+        `;
+
+        if (jitIndicator) jitIndicator.className = "w-1.5 h-1.5 bg-[#00e575] rounded-full";
+        if (jitLabel) jitLabel.innerText = "Build Verified ✓";
+
+        if (btn) {
+          btn.classList.remove('opacity-80', 'cursor-not-allowed');
+          btn.classList.add('bg-emerald-400');
+        }
+        if (label) label.innerText = "52/52 Passed ✓";
+        if (icon) icon.setAttribute('data-lucide', 'check');
+        lucide.createIcons();
+
+        // Burst celebratory confetti directly over the terminal
+        confetti({ particleCount: 50, spread: 60, origin: { x: 0.72, y: 0.35 } });
+
+        setTimeout(() => {
+          if (btn) btn.classList.remove('bg-emerald-400');
+          if (label) label.innerText = "Run Suite";
+          if (icon) icon.setAttribute('data-lucide', 'play');
+          if (jitLabel) jitLabel.innerText = "JIT Optimized";
+          isRunningSuite = false;
+          lucide.createIcons();
+        }, 3200);
+      }, 1250);
+    }
+
+    function copyDemoCredentials() {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText("demo@crm.com / Demo@123").then(() => {
+          alert("Demo Credentials copied to clipboard: demo@crm.com | Demo@123");
+          playTone(880, 0.08, 'sine');
+        }).catch(() => {
+          prompt("Copy demo credentials:", "demo@crm.com / Demo@123");
+        });
+      } else {
+        prompt("Copy demo credentials:", "demo@crm.com / Demo@123");
+      }
+    }
+
+    function copyEmailToClipboard() {
+      const email = "sohamnaik2586@gmail.com";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email).then(() => {
+          const label = document.getElementById('copy-email-label');
+          if (label) {
+            label.innerText = "Email Copied! ✓";
+            triggerMiniConfetti();
+            playTone(880, 0.08, 'sine');
+            setTimeout(() => label.innerText = "Copy Email", 3000);
+          }
+        }).catch(() => {
+          prompt("Copy Soham's email:", email);
+        });
+      } else {
+        prompt("Copy Soham's email:", email);
+      }
+    }
+
+    function triggerConfetti() {
+      confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+    }
+
+    function triggerMiniConfetti() {
+      confetti({ particleCount: 35, spread: 40, origin: { y: 0.7 } });
+    }
+
+    function goToContact(e) {
+      if (e) e.preventDefault();
+      const contact = document.getElementById('contact');
+      if (contact) {
+        contact.scrollIntoView({ behavior: 'smooth' });
+        const box = contact.querySelector('.max-w-5xl');
+        if (box) {
+          box.classList.add('ring-2', 'ring-[#00e575]', 'shadow-[0_0_40px_rgba(0,229,117,0.4)]', 'transition-all', 'duration-300');
+          playTone(523.25, 0.08, 'triangle');
+          setTimeout(() => {
+            box.classList.remove('ring-2', 'ring-[#00e575]', 'shadow-[0_0_40px_rgba(0,229,117,0.4)]');
+          }, 2200);
+        }
+      }
+    }
+
+  </script>
+</body>
+</html>
